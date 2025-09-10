@@ -1,22 +1,40 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Camera, Video, X, RefreshCcw } from "lucide-react";
 
+// Simple in-app store to pass extracted report to ReportPage
+const reportBus = {
+  data: null,
+  set(d) {
+    this.data = d;
+  },
+  get() {
+    return this.data;
+  },
+};
+export { reportBus };
+
+const API_BASE = import.meta.env.VITE_API_BASE;
+
 const FloatingReportModal = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [capturedImages, setCapturedImages] = useState([]); // Multiple images
-  const [capturedVideos, setCapturedVideos] = useState([]); // Multiple videos
+  const [capturedImages, setCapturedImages] = useState([]);
+  const [capturedVideos, setCapturedVideos] = useState([]);
   const [stream, setStream] = useState(null);
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const [recording, setRecording] = useState(false);
-  const [recordedChunks, setRecordedChunks] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewType, setPreviewType] = useState(""); // 'image' or 'video'
   const [previewIndex, setPreviewIndex] = useState(0);
 
+  const [submitting, setSubmitting] = useState(false);
+
+  // ---- Camera Controls ----
   const startCamera = async () => {
     setLoading(true);
     try {
@@ -45,64 +63,115 @@ const FloatingReportModal = () => {
     }
   };
 
+  // ---- Capture ----
   const capturePhoto = () => {
     if (recording || !videoRef.current) return;
     const canvas = document.createElement("canvas");
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
+    canvas.width = videoRef.current.videoWidth || 1280;
+    canvas.height = videoRef.current.videoHeight || 720;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
     canvas.toBlob((blob) => {
+      if (!blob) return;
       const imageURL = URL.createObjectURL(blob);
-      setCapturedImages((prev) => [...prev, imageURL]);
-    }, "image/jpeg");
+      // Store both preview URL + blob for upload
+      setCapturedImages((prev) => [...prev, { url: imageURL, blob }]);
+    }, "image/jpeg", 0.92);
   };
 
   const startRecording = () => {
-  if (capturedImages.length > 0 || !stream) return;
-  setRecording(true);
+    if (capturedImages.length > 0 || !stream) return;
+    setRecording(true);
 
-  const chunks = [];  // Local variable
-  const mediaRecorder = new MediaRecorder(stream);
-  mediaRecorderRef.current = mediaRecorder;
+    const chunks = [];
+    const mediaRecorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+    mediaRecorderRef.current = mediaRecorder;
 
-  mediaRecorder.ondataavailable = (e) => {
-    if (e.data.size > 0) {
-      chunks.push(e.data);  // Collect data into local array
-    }
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = () => {
+      const videoBlob = new Blob(chunks, { type: "video/webm" });
+      const videoURL = URL.createObjectURL(videoBlob);
+      setCapturedVideos((prev) => [...prev, { url: videoURL, blob: videoBlob }]);
+    };
+
+    mediaRecorder.start();
   };
 
-  mediaRecorder.onstop = () => {
-    const videoBlob = new Blob(chunks, { type: "video/webm" });
-    const videoURL = URL.createObjectURL(videoBlob);
-    setCapturedVideos((prev) => [...prev, videoURL]);
+  const stopRecording = () => {
+    if (!mediaRecorderRef.current) return;
+    mediaRecorderRef.current.stop();
+    setRecording(false);
   };
-
-  mediaRecorder.start();
-};
-
-const stopRecording = () => {
-  if (!mediaRecorderRef.current) return;
-  mediaRecorderRef.current.stop();
-  setRecording(false);
-};
-
 
   const resetMedia = () => {
     setCapturedImages([]);
     setCapturedVideos([]);
-    setRecordedChunks([]);
     stopCamera();
     startCamera();
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Report submitted with ${capturedImages.length} photos and ${capturedVideos.length} videos!`);
+  // ---- Backend Integration ----
+  const finishAndNavigateWith = (payload) => {
+    const reportObj = {
+      title: payload.issue_title || payload.title || "",
+      description: payload.detailed_description || payload.description || "",
+      category: payload.issue_category || payload.category || "Other",
+      priority: payload.priority || "medium",
+      mediaUrl: payload.media_url || "",
+      mediaKind: payload.mediaKind || payload.kind || "image",
+    };
+
+    reportBus.set(reportObj);
+
+    try {
+      sessionStorage.setItem("reportData", JSON.stringify(reportObj));
+    } catch (e) {
+      console.warn("Could not save reportData to sessionStorage:", e);
+    }
+
+    setSubmitting(false);
     setIsOpen(false);
-    resetMedia();
+    stopCamera();
+
+    navigate("/report", { state: { reportData: reportObj } });
   };
 
+  const uploadToBackend = async (file, kind) => {
+    const fd = new FormData();
+    fd.append("file", file, kind === "image" ? "capture.jpg" : "capture.webm");
+    fd.append("kind", kind);
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_BASE}/process`, { method: "POST", body: fd });
+      if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+      const data = await res.json();
+      finishAndNavigateWith(data);
+    } catch (e) {
+      console.error(e);
+      alert("Failed to analyze media.");
+      setSubmitting(false);
+      setIsOpen(false);
+      stopCamera();
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (recording) return;
+
+    if (capturedImages.length > 0) {
+      await uploadToBackend(capturedImages[0].blob, "image"); // currently uploads only first image
+    } else if (capturedVideos.length > 0) {
+      await uploadToBackend(capturedVideos[0].blob, "video"); // currently uploads only first video
+    } else {
+      alert("Capture a photo or record a video first.");
+    }
+  };
+
+  // ---- Modal Handlers ----
   const openModal = () => {
     setIsOpen(true);
     startCamera();
@@ -119,6 +188,7 @@ const stopRecording = () => {
     setPreviewOpen(true);
   };
 
+  // ---- UI ----
   return (
     <>
       <Button
@@ -137,12 +207,8 @@ const stopRecording = () => {
               <X className="w-7 h-7" />
             </button>
 
-            <h2 className="text-2xl md:text-3xl font-semibold mb-2 text-center">
-              Civic Report: Capture Photo or Video
-            </h2>
-            <p className="text-gray-300 text-base mb-4 text-center">
-              Capture multiple pieces of evidence and submit your incident report.
-            </p>
+            <h2 className="text-2xl md:text-3xl font-semibold mb-2 text-center">Civic Report: Capture Photo or Video</h2>
+            <p className="text-gray-300 text-base mb-4 text-center">Capture multiple pieces of evidence and submit your incident report.</p>
 
             <div className="mb-4 relative">
               {loading && (
@@ -171,48 +237,37 @@ const stopRecording = () => {
               </Button>
             </div>
 
-            {/* List of Captured Media */}
-{(capturedImages.length > 0 || capturedVideos.length > 0) && (
-  <div className="mb-4">
-    <ul className="list-disc list-inside space-y-2 text-white">
-      {capturedImages.map((img, idx) => (
-        <li key={`img-${idx}`}>
-          <button
-            className="text-primary underline text-sm"
-            onClick={() => openPreview("image", idx)}
-          >
-            Image {idx + 1} (Tap to Preview)
-          </button>
-        </li>
-      ))}
+            {(capturedImages.length > 0 || capturedVideos.length > 0) && (
+              <div className="mb-4">
+                <ul className="list-disc list-inside space-y-2 text-white">
+                  {capturedImages.map((img, idx) => (
+                    <li key={`img-${idx}`}>
+                      <button className="text-primary underline text-sm" onClick={() => openPreview("image", idx)}>
+                        Image {idx + 1} (Tap to Preview)
+                      </button>
+                    </li>
+                  ))}
+                  {capturedVideos.map((vid, idx) => (
+                    <li key={`vid-${idx}`}>
+                      <button className="text-primary underline text-sm" onClick={() => openPreview("video", idx)}>
+                        Video {idx + 1} (Tap to Preview)
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-      {capturedVideos.map((vid, idx) => (
-        <li key={`vid-${idx}`}>
-          <button
-            className="text-primary underline text-sm"
-            onClick={() => openPreview("video", idx)}
-          >
-            Video {idx + 1} (Tap to Preview)
-          </button>
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
-
-
-            {/* Preview Popup */}
             {previewOpen && (
               <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-60 p-4">
                 <div className="relative bg-gray-900 rounded-lg p-4 max-w-lg w-full">
                   <button className="absolute top-2 right-2 text-gray-200 hover:text-gray-400" onClick={() => setPreviewOpen(false)} aria-label="Close Preview">
                     <X className="w-6 h-6" />
                   </button>
-
                   {previewType === "image" ? (
-                    <img src={capturedImages[previewIndex]} alt={`Preview ${previewIndex + 1}`} className="w-full h-auto rounded-lg" />
+                    <img src={capturedImages[previewIndex].url} alt={`Preview ${previewIndex + 1}`} className="w-full h-auto rounded-lg" />
                   ) : (
-                    <video controls src={capturedVideos[previewIndex]} className="w-full h-auto rounded-lg" />
+                    <video controls src={capturedVideos[previewIndex].url} className="w-full h-auto rounded-lg" />
                   )}
                 </div>
               </div>
@@ -226,8 +281,8 @@ const stopRecording = () => {
                 : null}
             </div>
 
-            <Button type="submit" className="w-full mt-2 bg-primary text-white font-semibold" disabled={!capturedImages.length && !capturedVideos.length} onClick={handleSubmit}>
-              Submit Report
+            <Button type="submit" className="w-full mt-2 bg-primary text-white font-semibold" disabled={(!capturedImages.length && !capturedVideos.length) || submitting} onClick={handleSubmit}>
+              {submitting ? "Analyzing..." : "Submit Report"}
             </Button>
           </div>
         </div>
