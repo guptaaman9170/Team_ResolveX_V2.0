@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Camera, Video, X, RefreshCcw } from "lucide-react";
 
+
 // Simple in-app store to pass extracted report to ReportPage
 const reportBus = {
   data: null,
