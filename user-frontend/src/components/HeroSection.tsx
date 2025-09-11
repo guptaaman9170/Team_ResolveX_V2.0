@@ -4,6 +4,7 @@ import heroImage from "@/assets/hero-civic.jpg";
 import FloatingReportModal from "@/components/FloatingReportModal";
 import FloatingEmergencyModal from "@/components/FloatingEmergencyModal";
 import { Link } from "react-router-dom";
+import FloatingChatbotModal from "@/components/FloatingChatbotModal";
 
 
 const HeroSection = () => {
@@ -148,6 +149,11 @@ const HeroSection = () => {
   <div className="z-20">
     <FloatingReportModal />
   </div>
+  <div className="fixed bottom-16 left-8 z-50 flex flex-col gap-4">
+  {/* Chatbot Floating Button (Left Side) */}
+<FloatingChatbotModal />
+</div>
+
 </div>
 
 </div>

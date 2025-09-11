@@ -21,6 +21,30 @@ def serve_index():
 def serve_static(path):
     return send_from_directory(app.static_folder, path)
 
+# ✅ Chatbot route
+@app.route("/chat", methods=["POST"])
+def chat():
+    try:
+        user_msg = request.json.get("message", "")
+        if not user_msg:
+            return jsonify({"reply": "⚠️ Please enter a valid query."})
+
+        response = openai.ChatCompletion.create(
+            model="gpt-4o-mini",  # can switch to gpt-3.5-turbo if needed
+            messages=[
+                {"role": "system", "content": "You are a helpful Civic AI Assistant. Help users with civic issues, reporting guidance, and community support."},
+                {"role": "user", "content": user_msg}
+            ]
+        )
+
+        reply = response.choices[0].message["content"]
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        print(f"💥 Chatbot Error: {e}")
+        return jsonify({"reply": "❌ Server error, please try again later."}), 500
+
+
 @app.route("/process", methods=["POST"])
 def process_media():
     try:
@@ -174,6 +198,8 @@ def process_media():
     except Exception as e:
         print(f"💥 ERROR: {e}")
         return jsonify({"error": str(e)}), 500
+    
+
 
 
 if __name__ == "__main__":
