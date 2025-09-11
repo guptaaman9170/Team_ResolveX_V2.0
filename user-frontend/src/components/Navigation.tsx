@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Bell, User, Globe, Eye, Type } from "lucide-react";
 import {
@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Link, useNavigate } from "react-router-dom";
 import NotificationModal from "./NotificationModal";
 
 const Navigation = () => {
@@ -16,19 +17,40 @@ const Navigation = () => {
   const [isLargeFont, setIsLargeFont] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
+  const navigate = useNavigate(); // for programmatic navigation
+
+  const buttonHighContrastStyle = "text-blue-400 border-blue-400 bg-black";
+
+  useEffect(() => {
+    const storedContrast = localStorage.getItem("highContrast");
+    if (storedContrast === "true") {
+      setIsHighContrast(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("highContrast", isHighContrast ? "true" : "false");
+  }, [isHighContrast]);
+
   const toggleAccessibility = (type: "contrast" | "font") => {
     if (type === "contrast") {
-      setIsHighContrast(!isHighContrast);
-      document.documentElement.classList.toggle("high-contrast", !isHighContrast);
+      setIsHighContrast((prev) => !prev);
     } else {
-      setIsLargeFont(!isLargeFont);
-      document.documentElement.classList.toggle("large-fonts", !isLargeFont);
+      setIsLargeFont((prev) => !prev);
     }
   };
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      <nav
+        className={`sticky top-0 z-50 ${
+          isHighContrast
+            ? "bg-black text-white border-blue-400"
+            : "bg-background/80 text-foreground border-border"
+        } backdrop-blur-md border-b transition-colors duration-300 ${
+          isLargeFont ? "text-lg" : "text-base"
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -41,18 +63,38 @@ const Navigation = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="/" className="text-foreground hover:text-primary transition-colors">
+              <Link
+                to="/"
+                className={`hover:text-primary transition-colors ${
+                  isHighContrast ? "text-blue-400" : "text-foreground"
+                }`}
+              >
                 {language === "hi" ? "होम" : "Home"}
-              </a>
-              <a href="/report" className="text-foreground hover:text-primary transition-colors">
+              </Link>
+              <Link
+                to="/report"
+                className={`hover:text-primary transition-colors ${
+                  isHighContrast ? "text-blue-400" : "text-foreground"
+                }`}
+              >
                 {language === "hi" ? "रिपोर्ट करें" : "Report Issue"}
-              </a>
-              <a href="/dashboard" className="text-foreground hover:text-primary transition-colors">
+              </Link>
+              <Link
+                to="/dashboard"
+                className={`hover:text-primary transition-colors ${
+                  isHighContrast ? "text-blue-400" : "text-foreground"
+                }`}
+              >
                 {language === "hi" ? "डैशबोर्ड" : "Dashboard"}
-              </a>
-              <a href="/track-reports" className="text-foreground hover:text-primary transition-colors">
+              </Link>
+              <Link
+                to="/track-reports"
+                className={`hover:text-primary transition-colors ${
+                  isHighContrast ? "text-blue-400" : "text-foreground"
+                }`}
+              >
                 {language === "hi" ? "ट्रैक करें" : "Track Reports"}
-              </a>
+              </Link>
             </div>
 
             {/* Action Buttons */}
@@ -60,7 +102,11 @@ const Navigation = () => {
               {/* Language Selector */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={`${isHighContrast ? buttonHighContrastStyle : ""}`}
+                  >
                     <Globe className="w-4 h-4" />
                     {language === "hi" ? "हिं" : "EN"}
                   </Button>
@@ -78,7 +124,11 @@ const Navigation = () => {
               {/* Accessibility Options */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={`${isHighContrast ? buttonHighContrastStyle : ""}`}
+                  >
                     <Eye className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -96,20 +146,23 @@ const Navigation = () => {
 
               {/* Notifications */}
               <Button
-  variant="ghost"
-  size="sm"
-  className="relative"
-  onClick={() => setIsNotificationsOpen((prev) => !prev)}  // Toggle instead of always open
->
-  <Bell className="w-4 h-4" />
-  <span className="absolute -top-1 -right-1 w-2 h-2 bg-emergency rounded-full"></span>
-</Button>
-
+                variant="ghost"
+                size="sm"
+                className={`relative ${isHighContrast ? buttonHighContrastStyle : ""}`}
+                onClick={() => setIsNotificationsOpen((prev) => !prev)}
+              >
+                <Bell className="w-4 h-4" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-emergency rounded-full"></span>
+              </Button>
 
               {/* User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={`${isHighContrast ? buttonHighContrastStyle : ""}`}
+                  >
                     <User className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -120,8 +173,10 @@ const Navigation = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Button className="btn-civic">
-                {language === "hi" ? "रिपोर्ट करें" : "Report Issue"}
+              <Button
+                className={`btn-civic ${isHighContrast ? buttonHighContrastStyle : ""}`}
+              >
+                {language === "hi" ? "साइन आउट" : "Sign Out"}
               </Button>
             </div>
 
@@ -130,6 +185,7 @@ const Navigation = () => {
               <Button
                 variant="ghost"
                 size="sm"
+                className={`${isHighContrast ? buttonHighContrastStyle : ""}`}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Toggle menu"
               >
@@ -140,32 +196,71 @@ const Navigation = () => {
 
           {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className="md:hidden py-4 border-t border-border">
+            <div
+              className={`md:hidden py-4 border-t ${
+                isHighContrast ? "border-blue-400" : "border-border"
+              }`}
+            >
               <div className="flex flex-col space-y-3">
-                <a href="/" className="text-foreground hover:text-primary transition-colors px-3 py-2">
+                <Link
+                  to="/"
+                  className={`hover:text-primary transition-colors px-3 py-2 ${
+                    isHighContrast ? "text-blue-400" : "text-foreground"
+                  }`}
+                >
                   {language === "hi" ? "होम" : "Home"}
-                </a>
-                <a href="/report" className="text-foreground hover:text-primary transition-colors px-3 py-2">
+                </Link>
+                <Link
+                  to="/report"
+                  className={`hover:text-primary transition-colors px-3 py-2 ${
+                    isHighContrast ? "text-blue-400" : "text-foreground"
+                  }`}
+                >
                   {language === "hi" ? "रिपोर्ट करें" : "Report Issue"}
-                </a>
-                <a href="/dashboard" className="text-foreground hover:text-primary transition-colors px-3 py-2">
+                </Link>
+                <Link
+                  to="/dashboard"
+                  className={`hover:text-primary transition-colors px-3 py-2 ${
+                    isHighContrast ? "text-blue-400" : "text-foreground"
+                  }`}
+                >
                   {language === "hi" ? "डैशबोर्ड" : "Dashboard"}
-                </a>
-                <a href="/track" className="text-foreground hover:text-primary transition-colors px-3 py-2">
+                </Link>
+                <Link
+                  to="/track"
+                  className={`hover:text-primary transition-colors px-3 py-2 ${
+                    isHighContrast ? "text-blue-400" : "text-foreground"
+                  }`}
+                >
                   {language === "hi" ? "ट्रैक करें" : "Track Reports"}
-                </a>
+                </Link>
+
                 <div className="flex items-center justify-between px-3 py-2">
-                  <Button variant="ghost" size="sm" onClick={() => setLanguage(language === "en" ? "hi" : "en")}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={isHighContrast ? buttonHighContrastStyle : ""}
+                    onClick={() => setLanguage(language === "en" ? "hi" : "en")}
+                  >
                     <Globe className="w-4 h-4 mr-2" />
                     {language === "hi" ? "English" : "हिंदी"}
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => toggleAccessibility("contrast")}>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={isHighContrast ? buttonHighContrastStyle : ""}
+                    onClick={() => toggleAccessibility("contrast")}
+                  >
                     <Eye className="w-4 h-4" />
                   </Button>
                 </div>
+
                 <div className="px-3">
-                  <Button className="btn-civic w-full">
-                    {language === "hi" ? "रिपोर्ट करें" : "Report Issue"}
+                  <Button
+                    className={`btn-civic w-full ${isHighContrast ? buttonHighContrastStyle : ""}`}
+                  >
+                    {language === "hi" ? "साइन आउट" : "Sign Out"}
                   </Button>
                 </div>
               </div>
