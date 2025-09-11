@@ -114,62 +114,68 @@ const FloatingReportModal = () => {
   };
 
   // ---- Backend Integration ----
-  const finishAndNavigateWith = (payload) => {
-    const reportObj = {
-      title: payload.issue_title || payload.title || "",
-      description: payload.detailed_description || payload.description || "",
-      category: payload.issue_category || payload.category || "Other",
-      priority: payload.priority || "medium",
-      mediaUrl: payload.media_url || "",
-      mediaKind: payload.mediaKind || payload.kind || "image",
-    };
+  const finishAndNavigateWith = (payload, localPreviewUrl = null) => {
+  const reportObj = {
+    title: payload.issue_title || payload.title || "",
+    description: payload.detailed_description || payload.description || "",
+    category: payload.issue_category || payload.category || "Other",
+    priority: payload.priority || "medium",
+    mediaUrl: payload.media_url || "", // backend media url (if any)
+    mediaKind: payload.mediaKind || payload.kind || "image",
+    mediaPreviewUrl: localPreviewUrl,  // NEW → frontend photo/video preview
+  };
 
-    reportBus.set(reportObj);
+  reportBus.set(reportObj);
 
-    try {
-      sessionStorage.setItem("reportData", JSON.stringify(reportObj));
-    } catch (e) {
-      console.warn("Could not save reportData to sessionStorage:", e);
-    }
+  try {
+    sessionStorage.setItem("reportData", JSON.stringify(reportObj));
+  } catch (e) {
+    console.warn("Could not save reportData to sessionStorage:", e);
+  }
 
+  setSubmitting(false);
+  setIsOpen(false);
+  stopCamera();
+
+  navigate("/report", { state: { reportData: reportObj } });
+};
+
+
+  const uploadToBackend = async (file, kind, localPreviewUrl) => {
+  const fd = new FormData();
+  fd.append("file", file, kind === "image" ? "capture.jpg" : "capture.webm");
+  fd.append("kind", kind);
+  setSubmitting(true);
+  try {
+    const res = await fetch(`${API_BASE}/process`, { method: "POST", body: fd });
+    if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+    const data = await res.json();
+    finishAndNavigateWith(data, localPreviewUrl);
+  } catch (e) {
+    console.error(e);
+    alert("Failed to analyze media.");
     setSubmitting(false);
     setIsOpen(false);
     stopCamera();
+  }
+};
 
-    navigate("/report", { state: { reportData: reportObj } });
-  };
-
-  const uploadToBackend = async (file, kind) => {
-    const fd = new FormData();
-    fd.append("file", file, kind === "image" ? "capture.jpg" : "capture.webm");
-    fd.append("kind", kind);
-    setSubmitting(true);
-    try {
-      const res = await fetch(`${API_BASE}/process`, { method: "POST", body: fd });
-      if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
-      const data = await res.json();
-      finishAndNavigateWith(data);
-    } catch (e) {
-      console.error(e);
-      alert("Failed to analyze media.");
-      setSubmitting(false);
-      setIsOpen(false);
-      stopCamera();
-    }
-  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (recording) return;
+  e.preventDefault();
+  if (recording) return;
 
-    if (capturedImages.length > 0) {
-      await uploadToBackend(capturedImages[0].blob, "image"); // currently uploads only first image
-    } else if (capturedVideos.length > 0) {
-      await uploadToBackend(capturedVideos[0].blob, "video"); // currently uploads only first video
-    } else {
-      alert("Capture a photo or record a video first.");
-    }
-  };
+  if (capturedImages.length > 0) {
+    const { blob, url } = capturedImages[0];
+    await uploadToBackend(blob, "image", url);
+  } else if (capturedVideos.length > 0) {
+    const { blob, url } = capturedVideos[0];
+    await uploadToBackend(blob, "video", url);
+  } else {
+    alert("Capture a photo or record a video first.");
+  }
+};
+
 
   // ---- Modal Handlers ----
   const openModal = () => {

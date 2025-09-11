@@ -27,30 +27,34 @@ const ReportPage = () => {
   const { toast } = useToast();
 
   const categories = [
-    { value: "pothole", label: "Pothole", icon: "🕳️" },
-    { value: "streetlight", label: "Street Light", icon: "💡" },
-    { value: "garbage", label: "Garbage/Waste", icon: "🗑️" },
-    { value: "traffic", label: "Traffic Signal", icon: "🚦" },
-    { value: "sidewalk", label: "Sidewalk", icon: "🚶" },
-    { value: "water", label: "Water Issue", icon: "💧" },
-    { value: "other", label: "Other", icon: "📝" }
+    { value: "Pothole", label: "Pothole", icon: "🕳️" },
+    { value: "Street Light", label: "Street Light", icon: "💡" },
+    { value: "Garbage/Waste", label: "Garbage/Waste", icon: "🗑️" },
+    { value: "Traffic Signal", label: "Traffic Signal", icon: "🚦" },
+    { value: "Sidewalk", label: "Sidewalk", icon: "🚶" },
+    { value: "Water Issue", label: "Water Issue", icon: "💧" },
+    { value: "Other", label: "Other", icon: "📝" }
   ];
 
   // Auto-fill from capture modal
   useEffect(() => {
-    const fromCapture = reportBus.get();
-    if (fromCapture) {
-      setReportData((prev) => ({
-        ...prev,
-        title: fromCapture.title || prev.title,
-        description: fromCapture.description || prev.description,
-        category: fromCapture.category || prev.category,
-        mediaPreview: fromCapture.mediaUrl || "",
-        mediaKind: fromCapture.mediaKind || ""
-      }));
-      toast({ title: "Auto-filled from capture", description: "Fields populated from vision analysis." });
-    }
-  }, [toast]);
+  const fromCapture = reportBus.get();
+  if (fromCapture) {
+    setReportData((prev) => ({
+      ...prev,
+      title: fromCapture.title || prev.title,
+      description: fromCapture.description || prev.description,
+      category: fromCapture.category || prev.category,
+      mediaPreview: fromCapture.mediaPreviewUrl || fromCapture.mediaUrl || "", // ✅ FIXED
+      mediaKind: fromCapture.mediaKind || ""
+    }));
+    toast({
+      title: "Auto-filled from capture",
+      description: "Fields populated from vision analysis."
+    });
+  }
+}, [toast]);
+
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
