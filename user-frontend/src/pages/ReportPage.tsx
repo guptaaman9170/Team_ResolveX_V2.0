@@ -79,12 +79,51 @@ const ReportPage = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    toast({ title: "Report Submitted Successfully!", description: "AI has analyzed your report and assigned priority: HIGH. Report ID: #CR-2024-001" });
-    setIsSubmitting(false);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+
+  try {
+    // Convert uploaded images to Base64
+    const base64Images = await Promise.all(
+      reportData.images.map(file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      }))
+    );
+
+    // Send report to backend for spam/AI check
+    const response = await fetch("http://127.0.0.1:5001/moderate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: reportData.title,
+        description: reportData.description,
+        images: base64Images
+      })
+    });
+
+    const data = await response.json();
+
+    // 🚫 If backend says spam → block submission
+    if (data.status === "spam") {
+      toast({
+        title: "🚫 Spam Report Detected",
+        description: data.message,
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return; // ❌ Do not reset form or mark submitted
+    }
+
+    // ✅ Otherwise, allow successful submission
+    toast({
+      title: "✅ Report Submitted Successfully!",
+      description: data.message
+    });
+
     setReportData({
       title: "",
       description: "",
@@ -95,7 +134,18 @@ const ReportPage = () => {
       mediaPreview: "",
       mediaKind: ""
     });
-  };
+
+  } catch (err) {
+    toast({
+      title: "❌ Error Submitting Report",
+      description: String(err),
+      variant: "destructive"
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {

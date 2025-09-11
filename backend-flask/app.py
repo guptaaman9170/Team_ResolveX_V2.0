@@ -199,7 +199,70 @@ def process_media():
         print(f"💥 ERROR: {e}")
         return jsonify({"error": str(e)}), 500
     
-# Bhang bharosa
+@app.route("/moderate", methods=["POST"])
+def moderate_report():
+    try:
+        data = request.json
+        title = data.get("title", "")
+        description = data.get("description", "")
+        images = data.get("images", [])
+
+        # Combine text fields
+        text = f"{title}\n{description}"
+
+        # 1️⃣ Harmful/unsafe content check (text moderation)
+        response = openai.Moderation.create(
+            model="text-moderation-latest",   # in 0.28, it's openai.Moderation.create
+            input=text
+        )
+        flagged = response["results"][0]["flagged"]
+        if flagged:
+            return jsonify({"status": "spam", "message": "Inappropriate or harmful report detected"}), 200
+
+        # 2️⃣ Custom GPT check for gibberish/spam
+        relevance_prompt = f"""
+        You are validating a civic issue report.
+        Title: "{title}"
+        Description: "{description}"
+
+        Rules:
+        - If the text is gibberish (random letters like "asdfghjwertyu"), mark as SPAM.
+        - If it's unrelated to civic/community issues (roads, garbage, water, street lights, etc.), mark as SPAM.
+        - Otherwise mark as VALID.
+        Answer with only one word: SPAM or VALID.
+        """
+
+        relevance_check = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # available in 0.28
+            messages=[{"role": "user", "content": relevance_prompt}]
+        )
+
+        decision = relevance_check["choices"][0]["message"]["content"].strip().upper()
+
+        if decision == "SPAM":
+            return jsonify({"status": "spam", "message": "This looks like gibberish or irrelevant spam"}), 200
+
+        # 3️⃣ Optional: Image moderation (only works for text in 0.28, no direct image moderation API)
+        for img_b64 in images:
+            try:
+                # NOTE: In openai 0.28, direct image moderation isn't supported.
+                # A workaround is to describe the image via GPT first, then moderate the description.
+                # Here, we'll just skip or run moderation on placeholder text.
+                img_desc = "User uploaded an image related to the report."
+                img_response = openai.Moderation.create(
+                    model="text-moderation-latest",
+                    input=img_desc
+                )
+                if img_response["results"][0]["flagged"]:
+                    return jsonify({"status": "spam", "message": "Inappropriate or harmful image detected"}), 200
+            except Exception as e:
+                return jsonify({"status": "error", "message": f"Image check failed: {str(e)}"}), 500
+
+        # ✅ If all checks passed
+        return jsonify({"status": "ok", "message": "Report is valid"}), 200
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 if __name__ == "__main__":
