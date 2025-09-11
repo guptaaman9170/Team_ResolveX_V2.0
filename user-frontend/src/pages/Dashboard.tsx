@@ -4,27 +4,35 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Search, 
-  Filter, 
-  MapPin, 
-  Clock, 
-  ThumbsUp, 
+import {
+  Search,
+  Filter,
+  MapPin,
+  Clock,
+  ThumbsUp,
+  ThumbsDown,
   MessageSquare,
   CheckCircle,
   AlertTriangle,
   Brain,
   TrendingUp,
   Users,
-  Calendar
+  Calendar,
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [votedReports, setVotedReports] = useState<string[]>([]);
+  const [newComment, setNewComment] = useState("");
+  const [commentReactions, setCommentReactions] = useState<{ [key: number]: "like" | "dislike" | null }>({});
+  const [expandedReport, setExpandedReport] = useState<string | null>(null);
 
+  // Mock Reports
   const [reports, setReports] = useState([
     {
       id: "CR-2024-001",
@@ -40,14 +48,16 @@ const Dashboard = () => {
         { id: 2, text: "My car was damaged here yesterday.", likes: 1, dislikes: 1 },
         { id: 3, text: "Dangerous for bikers at night.", likes: 0, dislikes: 0 },
         { id: 4, text: "Please repair ASAP.", likes: 3, dislikes: 0 },
-        { id: 5, text: "It’s getting worse after rain.", likes: 0, dislikes: 2 }
+        { id: 5, text: "It’s getting worse after rain.", likes: 0, dislikes: 2 },
       ],
       assignedTo: "Public Works Dept",
       description: "Large pothole causing traffic issues and potential vehicle damage.",
-      aiConfidence: 95
+      details:
+        "The pothole on Main Street has been expanding over the past few weeks, creating a major hazard for both cars and two-wheelers. Drivers have reported frequent tire damage and difficulty maneuvering around the area, especially during peak traffic hours. In rainy conditions, the pothole fills with water, making it hard to spot and increasing the risk of accidents. If not repaired soon, it could lead to serious vehicle damage and possible injuries.",
+      aiConfidence: 95,
     },
     {
-      id: "CR-2024-002", 
+      id: "CR-2024-002",
       title: "Broken streetlight on Park Road",
       category: "Street Light",
       status: "resolved",
@@ -60,67 +70,24 @@ const Dashboard = () => {
         { id: 2, text: "My car was damaged here yesterday.", likes: 1, dislikes: 1 },
         { id: 3, text: "Dangerous for bikers at night.", likes: 0, dislikes: 0 },
         { id: 4, text: "Please repair ASAP.", likes: 3, dislikes: 0 },
-        { id: 5, text: "It’s getting worse after rain.", likes: 0, dislikes: 2 }
+        { id: 5, text: "It’s getting worse after rain.", likes: 0, dislikes: 2 },
       ],
       assignedTo: "Electrical Dept",
       description: "Streetlight not working, creating safety concerns for pedestrians.",
-      aiConfidence: 87
+      details:
+        "The non-functional streetlight near the residential block has left the entire stretch of road poorly lit during nighttime. This creates unsafe conditions for pedestrians, particularly women, children, and elderly residents walking in the area. Several locals have reported feeling unsafe due to reduced visibility, and vehicles also find it difficult to navigate in low light. Repairing the streetlight is critical to improving both safety and security in the neighborhood.",
+      aiConfidence: 87,
     },
-    {
-      id: "CR-2024-003",
-      title: "Garbage overflow at Central Market",
-      category: "Garbage",
-      status: "pending",
-      priority: "high",
-      location: "Central Market, Section B",
-      createdAt: "2024-01-13",
-      votes: 31,
-      comments: [
-        { id: 1, text: "This needs urgent fixing!", likes: 2, dislikes: 0 },
-        { id: 2, text: "My car was damaged here yesterday.", likes: 1, dislikes: 1 },
-        { id: 3, text: "Dangerous for bikers at night.", likes: 0, dislikes: 0 },
-        { id: 4, text: "Please repair ASAP.", likes: 3, dislikes: 0 },
-        { id: 5, text: "It’s getting worse after rain.", likes: 0, dislikes: 2 }
-      ],
-      assignedTo: "Sanitation Dept",
-      description: "Multiple garbage bins overflowing, creating unsanitary conditions.",
-      aiConfidence: 92
-    },
-    {
-      id: "CR-2024-004",
-      title: "Traffic signal malfunction",
-      category: "Traffic",
-      status: "in-progress",
-      priority: "high",
-      location: "Highway Intersection",
-      createdAt: "2024-01-12",
-      votes: 42,
-      comments: [
-        { id: 1, text: "This needs urgent fixing!", likes: 2, dislikes: 0 },
-        { id: 2, text: "My car was damaged here yesterday.", likes: 1, dislikes: 1 },
-        { id: 3, text: "Dangerous for bikers at night.", likes: 0, dislikes: 0 },
-        { id: 4, text: "Please repair ASAP.", likes: 3, dislikes: 0 },
-        { id: 5, text: "It’s getting worse after rain.", likes: 0, dislikes: 2 }
-      ],
-      assignedTo: "Traffic Control",
-      description: "Traffic lights stuck on red, causing major traffic backup.",
-      aiConfidence: 98
-    }
+    // Add more reports as needed
   ]);
 
-  const [votedReports, setVotedReports] = useState<string[]>([]);
-  const [openComments, setOpenComments] = useState<string | null>(null);
-  const [newComment, setNewComment] = useState("");
-  const [commentReactions, setCommentReactions] = useState<{ [key: number]: "like" | "dislike" | null }>({});
-  const [expandedReport, setExpandedReport] = useState<string | null>(null);
-
   const handleCommentReaction = (reportId: string, commentId: number, action: "like" | "dislike") => {
-    setReports(prevReports =>
-      prevReports.map(r =>
+    setReports((prevReports) =>
+      prevReports.map((r) =>
         r.id === reportId
           ? {
               ...r,
-              comments: r.comments.map(c => {
+              comments: r.comments.map((c) => {
                 if (c.id !== commentId) return c;
 
                 const prevReaction = commentReactions[commentId] || null;
@@ -130,20 +97,20 @@ const Dashboard = () => {
                 if (action === "like") {
                   if (prevReaction === "like") {
                     updatedLikes -= 1;
-                    setCommentReactions(prev => ({ ...prev, [commentId]: null }));
+                    setCommentReactions((prev) => ({ ...prev, [commentId]: null }));
                   } else {
                     updatedLikes += 1;
                     if (prevReaction === "dislike") updatedDislikes -= 1;
-                    setCommentReactions(prev => ({ ...prev, [commentId]: "like" }));
+                    setCommentReactions((prev) => ({ ...prev, [commentId]: "like" }));
                   }
                 } else if (action === "dislike") {
                   if (prevReaction === "dislike") {
                     updatedDislikes -= 1;
-                    setCommentReactions(prev => ({ ...prev, [commentId]: null }));
+                    setCommentReactions((prev) => ({ ...prev, [commentId]: null }));
                   } else {
                     updatedDislikes += 1;
                     if (prevReaction === "like") updatedLikes -= 1;
-                    setCommentReactions(prev => ({ ...prev, [commentId]: "dislike" }));
+                    setCommentReactions((prev) => ({ ...prev, [commentId]: "dislike" }));
                   }
                 }
 
@@ -156,37 +123,43 @@ const Dashboard = () => {
   };
 
   const handleVote = (id: string) => {
-    setReports(prevReports =>
-      prevReports.map(report =>
-        report.id === id
-          ? {
-              ...report,
-              votes: votedReports.includes(id) ? report.votes - 1 : report.votes + 1
-            }
-          : report
-      )
+    setReports((prevReports) =>
+      prevReports.map((report) => ({
+        ...report,
+        votes: votedReports.includes(id)
+          ? report.votes - 1
+          : report.votes + 1,
+      }))
     );
 
-    setVotedReports(prev =>
-      prev.includes(id) ? prev.filter(voteId => voteId !== id) : [...prev, id]
+    setVotedReports((prev) =>
+      prev.includes(id) ? prev.filter((voteId) => voteId !== id) : [...prev, id]
     );
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "pending": return "status-pending border-l-4 border-l-warning";
-      case "in-progress": return "status-progress border-l-4 border-l-primary";
-      case "resolved": return "status-resolved border-l-4 border-l-success";
-      default: return "border-l-4 border-l-muted";
+      case "pending":
+        return "status-pending border-l-4 border-l-warning";
+      case "in-progress":
+        return "status-progress border-l-4 border-l-primary";
+      case "resolved":
+        return "status-resolved border-l-4 border-l-success";
+      default:
+        return "border-l-4 border-l-muted";
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case "high": return "text-emergency bg-emergency/10 border-emergency/20";
-      case "medium": return "text-warning bg-warning/10 border-warning/20";
-      case "low": return "text-success bg-success/10 border-success/20";
-      default: return "text-muted-foreground bg-muted border-border";
+      case "high":
+        return "text-emergency bg-emergency/10 border-emergency/20";
+      case "medium":
+        return "text-warning bg-warning/10 border-warning/20";
+      case "low":
+        return "text-success bg-success/10 border-success/20";
+      default:
+        return "text-muted-foreground bg-muted border-border";
     }
   };
 
@@ -194,21 +167,24 @@ const Dashboard = () => {
     { title: "Total Reports", value: "1,247", change: "+12%", icon: AlertTriangle, color: "text-primary" },
     { title: "Resolved Issues", value: "856", change: "+8%", icon: CheckCircle, color: "text-success" },
     { title: "Active Citizens", value: "3,421", change: "+15%", icon: Users, color: "text-accent" },
-    { title: "Response Time", value: "2.3 hrs", change: "-5%", icon: Clock, color: "text-warning" }
+    { title: "Response Time", value: "2.3 hrs", change: "-5%", icon: Clock, color: "text-warning" },
   ];
 
-  const filteredReports = reports.filter(report =>
-    report.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    (filterStatus === "all" || report.status === filterStatus) &&
-    (filterCategory === "all" || report.category.toLowerCase().includes(filterCategory.toLowerCase()))
-  );
+  const filteredReports = reports.filter((report) => {
+    const matchesSearch =
+      report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      report.location.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === "all" || report.status === filterStatus;
+    const matchesCategory = filterCategory === "all" || report.category.toLowerCase().includes(filterCategory.toLowerCase());
+
+    return matchesSearch && matchesStatus && matchesCategory;
+  });
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-4">
@@ -228,7 +204,7 @@ const Dashboard = () => {
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">{stat.title}</p>
                     <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                    <p className={`text-xs ${stat.change.startsWith('+') ? 'text-success' : 'text-warning'}`}>
+                    <p className={`text-xs ${stat.change.startsWith("+") ? "text-success" : "text-warning"}`}>
                       {stat.change} from last month
                     </p>
                   </div>
@@ -297,11 +273,10 @@ const Dashboard = () => {
               <CardContent className="p-6">
                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                   <div className="flex-1">
+                    {/* Report Header */}
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="text-xl font-semibold text-foreground mb-2">
-                          {report.title}
-                        </h3>
+                        <h3 className="text-xl font-semibold text-foreground mb-2">{report.title}</h3>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
@@ -329,10 +304,9 @@ const Dashboard = () => {
                       </div>
                     </div>
 
-                    <p className="text-muted-foreground mb-4 leading-relaxed">
-                      {report.description}
-                    </p>
+                    <p className="text-muted-foreground mb-4 leading-relaxed">{report.description}</p>
 
+                    {/* Votes and Comments */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -340,15 +314,86 @@ const Dashboard = () => {
                           <span>{report.votes} votes</span>
                         </div>
 
-                        <div
-                          className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer"
-                          onClick={() =>
-                            setOpenComments(openComments === report.id ? null : report.id)
-                          }
-                        >
-                          <MessageSquare className="w-4 h-4" />
-                          <span>{report.comments.length} comments</span>
-                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                              <MessageSquare className="w-4 h-4" />
+                              <span>{report.comments.length} comments</span>
+                              <ChevronDown className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-96 max-h-80 overflow-y-auto p-3">
+                            <div className="space-y-2 mb-3">
+                              {report.comments.length > 0 ? (
+                                report.comments.map((c) => (
+                                  <div
+                                    key={c.id}
+                                    className="flex items-center justify-between text-sm text-muted-foreground bg-white/5 p-2 rounded-md"
+                                  >
+                                    <span>• {c.text}</span>
+                                    <div className="flex items-center gap-3">
+                                      <button
+                                        onClick={() => handleCommentReaction(report.id, c.id, "like")}
+                                        className={`flex items-center gap-1 ${
+                                          commentReactions[c.id] === "like" ? "text-blue-500" : ""
+                                        }`}
+                                      >
+                                        <ThumbsUp className="w-4 h-4" /> {c.likes}
+                                      </button>
+                                      <button
+                                        onClick={() => handleCommentReaction(report.id, c.id, "dislike")}
+                                        className={`flex items-center gap-1 ${
+                                          commentReactions[c.id] === "dislike" ? "text-red-500" : ""
+                                        }`}
+                                      >
+                                        <ThumbsDown className="w-4 h-4" /> {c.dislikes}
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))
+                              ) : (
+                                <p className="text-sm text-muted-foreground italic">No comments yet.</p>
+                              )}
+                            </div>
+
+                            {/* Add new comment */}
+                            <div className="flex gap-2">
+                              <Input
+                                placeholder="Add a comment..."
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                              />
+                              <Button
+                                onClick={() => {
+                                  if (!newComment.trim()) return;
+
+                                  setReports((prev) =>
+                                    prev.map((r) =>
+                                      r.id === report.id
+                                        ? {
+                                            ...r,
+                                            comments: [
+                                              ...r.comments,
+                                              {
+                                                id: Date.now(),
+                                                text: newComment,
+                                                likes: 0,
+                                                dislikes: 0,
+                                              },
+                                            ],
+                                          }
+                                        : r
+                                    )
+                                  );
+
+                                  setNewComment("");
+                                }}
+                              >
+                                Post
+                              </Button>
+                            </div>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
 
                         <Badge variant="outline" className="text-xs">
                           {report.assignedTo}
@@ -378,12 +423,11 @@ const Dashboard = () => {
                       </div>
                     </div>
 
+                    {/* Expanded Report Details */}
                     {expandedReport === report.id && (
                       <div className="mt-4 border-t pt-4 bg-muted/30 rounded-lg p-4">
                         <h4 className="font-semibold mb-2">Issue Details</h4>
-                        <p className="text-sm text-muted-foreground mb-3">
-                          {report.description}
-                        </p>
+                        <p className="text-sm text-muted-foreground mb-3">{report.details}</p>
 
                         <div className="mb-2">
                           <span className="text-sm font-medium">Assigned To:</span>{" "}
@@ -395,6 +439,7 @@ const Dashboard = () => {
                           <Badge>{report.status.toUpperCase()}</Badge>
                         </div>
 
+                        {/* Progress bar */}
                         <div className="mt-4">
                           <p className="text-sm font-medium mb-1">Resolution Progress</p>
                           <div className="w-full bg-muted rounded-full h-3">
@@ -421,76 +466,6 @@ const Dashboard = () => {
                     )}
                   </div>
                 </div>
-
-                {openComments === report.id && (
-                  <div className="mt-4 border-t pt-4 bg-muted/20 rounded-lg p-4">
-                    <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">
-                      {report.comments.length > 0 ? (
-                        report.comments.map((c) => (
-                          <div key={c.id} className="flex items-center justify-between text-sm text-muted-foreground bg-white/5 p-2 rounded-md">
-                            <span>• {c.text}</span>
-
-                            <div className="flex items-center gap-3">
-                              <button
-                                onClick={() => handleCommentReaction(report.id, c.id, "like")}
-                                className={`flex items-center gap-1 ${commentReactions[c.id] === "like" ? "text-blue-500" : ""}`}
-                              >
-                                👍 {c.likes}
-                              </button>
-
-                              <button
-                                onClick={() => handleCommentReaction(report.id, c.id, "dislike")}
-                                className={`flex items-center gap-1 ${commentReactions[c.id] === "dislike" ? "text-red-500" : ""}`}
-                              >
-                                👎 {c.dislikes}
-                              </button>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-sm text-muted-foreground italic">
-                          No comments yet.
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="Add a comment..."
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                      />
-                      <Button
-                        onClick={() => {
-                          if (!newComment.trim()) return;
-
-                          setReports((prev) =>
-                            prev.map((r) =>
-                              r.id === report.id
-                                ? {
-                                    ...r,
-                                    comments: [
-                                      ...r.comments,
-                                      {
-                                        id: Date.now(),
-                                        text: newComment,
-                                        likes: 0,
-                                        dislikes: 0,
-                                      },
-                                    ],
-                                  }
-                                : r
-                            )
-                          );
-
-                          setNewComment("");
-                        }}
-                      >
-                        Post
-                      </Button>
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
           ))}
