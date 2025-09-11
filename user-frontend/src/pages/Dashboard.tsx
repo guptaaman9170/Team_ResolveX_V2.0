@@ -25,8 +25,7 @@ const Dashboard = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
 
-  // Mock data for reports // Reports state
-const [reports, setReports] = useState([
+  const [reports, setReports] = useState([
     {
       id: "CR-2024-001",
       title: "Large pothole on Main Street",
@@ -36,7 +35,13 @@ const [reports, setReports] = useState([
       location: "Main St & Oak Ave",
       createdAt: "2024-01-15",
       votes: 23,
-      comments: 5,
+      comments: [
+        { id: 1, text: "This needs urgent fixing!", likes: 2, dislikes: 0 },
+        { id: 2, text: "My car was damaged here yesterday.", likes: 1, dislikes: 1 },
+        { id: 3, text: "Dangerous for bikers at night.", likes: 0, dislikes: 0 },
+        { id: 4, text: "Please repair ASAP.", likes: 3, dislikes: 0 },
+        { id: 5, text: "It’s getting worse after rain.", likes: 0, dislikes: 2 }
+      ],
       assignedTo: "Public Works Dept",
       description: "Large pothole causing traffic issues and potential vehicle damage.",
       aiConfidence: 95
@@ -50,7 +55,13 @@ const [reports, setReports] = useState([
       location: "Park Rd, Block 4",
       createdAt: "2024-01-14",
       votes: 15,
-      comments: 3,
+      comments: [
+        { id: 1, text: "This needs urgent fixing!", likes: 2, dislikes: 0 },
+        { id: 2, text: "My car was damaged here yesterday.", likes: 1, dislikes: 1 },
+        { id: 3, text: "Dangerous for bikers at night.", likes: 0, dislikes: 0 },
+        { id: 4, text: "Please repair ASAP.", likes: 3, dislikes: 0 },
+        { id: 5, text: "It’s getting worse after rain.", likes: 0, dislikes: 2 }
+      ],
       assignedTo: "Electrical Dept",
       description: "Streetlight not working, creating safety concerns for pedestrians.",
       aiConfidence: 87
@@ -64,7 +75,13 @@ const [reports, setReports] = useState([
       location: "Central Market, Section B",
       createdAt: "2024-01-13",
       votes: 31,
-      comments: 8,
+      comments: [
+        { id: 1, text: "This needs urgent fixing!", likes: 2, dislikes: 0 },
+        { id: 2, text: "My car was damaged here yesterday.", likes: 1, dislikes: 1 },
+        { id: 3, text: "Dangerous for bikers at night.", likes: 0, dislikes: 0 },
+        { id: 4, text: "Please repair ASAP.", likes: 3, dislikes: 0 },
+        { id: 5, text: "It’s getting worse after rain.", likes: 0, dislikes: 2 }
+      ],
       assignedTo: "Sanitation Dept",
       description: "Multiple garbage bins overflowing, creating unsanitary conditions.",
       aiConfidence: 92
@@ -78,39 +95,82 @@ const [reports, setReports] = useState([
       location: "Highway Intersection",
       createdAt: "2024-01-12",
       votes: 42,
-      comments: 12,
+      comments: [
+        { id: 1, text: "This needs urgent fixing!", likes: 2, dislikes: 0 },
+        { id: 2, text: "My car was damaged here yesterday.", likes: 1, dislikes: 1 },
+        { id: 3, text: "Dangerous for bikers at night.", likes: 0, dislikes: 0 },
+        { id: 4, text: "Please repair ASAP.", likes: 3, dislikes: 0 },
+        { id: 5, text: "It’s getting worse after rain.", likes: 0, dislikes: 2 }
+      ],
       assignedTo: "Traffic Control",
       description: "Traffic lights stuck on red, causing major traffic backup.",
       aiConfidence: 98
     }
   ]);
 
-
   const [votedReports, setVotedReports] = useState<string[]>([]);
+  const [openComments, setOpenComments] = useState<string | null>(null);
+  const [newComment, setNewComment] = useState("");
+  const [commentReactions, setCommentReactions] = useState<{ [key: number]: "like" | "dislike" | null }>({});
+  const [expandedReport, setExpandedReport] = useState<string | null>(null);
 
+  const handleCommentReaction = (reportId: string, commentId: number, action: "like" | "dislike") => {
+    setReports(prevReports =>
+      prevReports.map(r =>
+        r.id === reportId
+          ? {
+              ...r,
+              comments: r.comments.map(c => {
+                if (c.id !== commentId) return c;
 
-    const handleVote = (id: string) => {
-  setReports(prevReports =>
-    prevReports.map(report =>
-      report.id === id
-        ? {
-            ...report,
-            votes: votedReports.includes(id)
-              ? report.votes - 1 // remove vote
-              : report.votes + 1 // add vote
-          }
-        : report
-    )
-  );
+                const prevReaction = commentReactions[commentId] || null;
+                let updatedLikes = c.likes;
+                let updatedDislikes = c.dislikes;
 
-  setVotedReports(prev =>
-    prev.includes(id)
-      ? prev.filter(voteId => voteId !== id) // remove from voted list
-      : [...prev, id] // add to voted list
-  );
-};
+                if (action === "like") {
+                  if (prevReaction === "like") {
+                    updatedLikes -= 1;
+                    setCommentReactions(prev => ({ ...prev, [commentId]: null }));
+                  } else {
+                    updatedLikes += 1;
+                    if (prevReaction === "dislike") updatedDislikes -= 1;
+                    setCommentReactions(prev => ({ ...prev, [commentId]: "like" }));
+                  }
+                } else if (action === "dislike") {
+                  if (prevReaction === "dislike") {
+                    updatedDislikes -= 1;
+                    setCommentReactions(prev => ({ ...prev, [commentId]: null }));
+                  } else {
+                    updatedDislikes += 1;
+                    if (prevReaction === "like") updatedLikes -= 1;
+                    setCommentReactions(prev => ({ ...prev, [commentId]: "dislike" }));
+                  }
+                }
 
+                return { ...c, likes: updatedLikes, dislikes: updatedDislikes };
+              }),
+            }
+          : r
+      )
+    );
+  };
 
+  const handleVote = (id: string) => {
+    setReports(prevReports =>
+      prevReports.map(report =>
+        report.id === id
+          ? {
+              ...report,
+              votes: votedReports.includes(id) ? report.votes - 1 : report.votes + 1
+            }
+          : report
+      )
+    );
+
+    setVotedReports(prev =>
+      prev.includes(id) ? prev.filter(voteId => voteId !== id) : [...prev, id]
+    );
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -137,20 +197,18 @@ const [reports, setReports] = useState([
     { title: "Response Time", value: "2.3 hrs", change: "-5%", icon: Clock, color: "text-warning" }
   ];
 
-  const filteredReports = reports.filter(report => {
-    const matchesSearch = report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         report.location.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = filterStatus === "all" || report.status === filterStatus;
-    const matchesCategory = filterCategory === "all" || report.category.toLowerCase().includes(filterCategory.toLowerCase());
-    
-    return matchesSearch && matchesStatus && matchesCategory;
-  });
+  const filteredReports = reports.filter(report =>
+    report.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    (filterStatus === "all" || report.status === filterStatus) &&
+    (filterCategory === "all" || report.category.toLowerCase().includes(filterCategory.toLowerCase()))
+  );
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-4">
@@ -174,7 +232,7 @@ const [reports, setReports] = useState([
                       {stat.change} from last month
                     </p>
                   </div>
-                  <div className={`w-12 h-12 rounded-full bg-muted flex items-center justify-center`}>
+                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
                     <stat.icon className={`w-6 h-6 ${stat.color}`} />
                   </div>
                 </div>
@@ -187,18 +245,16 @@ const [reports, setReports] = useState([
         <Card className="card-civic mb-8">
           <CardContent className="p-6">
             <div className="flex flex-col lg:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search reports by title or location..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search reports by title or location..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
               </div>
-              
+
               <div className="flex gap-4">
                 <Select value={filterStatus} onValueChange={setFilterStatus}>
                   <SelectTrigger className="w-40">
@@ -261,7 +317,7 @@ const [reports, setReports] = useState([
                           </span>
                         </div>
                       </div>
-                      
+
                       <div className="flex flex-col items-end gap-2">
                         <Badge className={`px-3 py-1 ${getPriorityColor(report.priority)}`}>
                           {report.priority.toUpperCase()}
@@ -283,30 +339,158 @@ const [reports, setReports] = useState([
                           <ThumbsUp className="w-4 h-4" />
                           <span>{report.votes} votes</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+
+                        <div
+                          className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer"
+                          onClick={() =>
+                            setOpenComments(openComments === report.id ? null : report.id)
+                          }
+                        >
                           <MessageSquare className="w-4 h-4" />
-                          <span>{report.comments} comments</span>
+                          <span>{report.comments.length} comments</span>
                         </div>
+
                         <Badge variant="outline" className="text-xs">
                           {report.assignedTo}
                         </Badge>
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <Button variant="outline" size="sm">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            setExpandedReport(expandedReport === report.id ? null : report.id)
+                          }
+                        >
                           View Details
                         </Button>
-                        <Button variant={votedReports.includes(report.id) ? "default" : "outline"} size="sm"
-                             onClick={() => handleVote(report.id)}>
-                             <ThumbsUp
-                              className={`w-4 h-4 ${votedReports.includes(report.id) ? "text-blue-500" : ""}`} />
-                            </Button>
 
-
+                        <Button
+                          variant={votedReports.includes(report.id) ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleVote(report.id)}
+                        >
+                          <ThumbsUp
+                            className={`w-4 h-4 ${votedReports.includes(report.id) ? "text-blue-500" : ""}`}
+                          />
+                        </Button>
                       </div>
                     </div>
+
+                    {expandedReport === report.id && (
+                      <div className="mt-4 border-t pt-4 bg-muted/30 rounded-lg p-4">
+                        <h4 className="font-semibold mb-2">Issue Details</h4>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          {report.description}
+                        </p>
+
+                        <div className="mb-2">
+                          <span className="text-sm font-medium">Assigned To:</span>{" "}
+                          <Badge variant="outline">{report.assignedTo}</Badge>
+                        </div>
+
+                        <div className="mb-2">
+                          <span className="text-sm font-medium">Status:</span>{" "}
+                          <Badge>{report.status.toUpperCase()}</Badge>
+                        </div>
+
+                        <div className="mt-4">
+                          <p className="text-sm font-medium mb-1">Resolution Progress</p>
+                          <div className="w-full bg-muted rounded-full h-3">
+                            <div
+                              className={`h-3 rounded-full ${
+                                report.status === "resolved"
+                                  ? "bg-green-500"
+                                  : report.status === "in-progress"
+                                  ? "bg-yellow-500"
+                                  : "bg-gray-400"
+                              }`}
+                              style={{
+                                width:
+                                  report.status === "resolved"
+                                    ? "100%"
+                                    : report.status === "in-progress"
+                                    ? "60%"
+                                    : "20%",
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
+
+                {openComments === report.id && (
+                  <div className="mt-4 border-t pt-4 bg-muted/20 rounded-lg p-4">
+                    <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">
+                      {report.comments.length > 0 ? (
+                        report.comments.map((c) => (
+                          <div key={c.id} className="flex items-center justify-between text-sm text-muted-foreground bg-white/5 p-2 rounded-md">
+                            <span>• {c.text}</span>
+
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => handleCommentReaction(report.id, c.id, "like")}
+                                className={`flex items-center gap-1 ${commentReactions[c.id] === "like" ? "text-blue-500" : ""}`}
+                              >
+                                👍 {c.likes}
+                              </button>
+
+                              <button
+                                onClick={() => handleCommentReaction(report.id, c.id, "dislike")}
+                                className={`flex items-center gap-1 ${commentReactions[c.id] === "dislike" ? "text-red-500" : ""}`}
+                              >
+                                👎 {c.dislikes}
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-muted-foreground italic">
+                          No comments yet.
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Add a comment..."
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                      />
+                      <Button
+                        onClick={() => {
+                          if (!newComment.trim()) return;
+
+                          setReports((prev) =>
+                            prev.map((r) =>
+                              r.id === report.id
+                                ? {
+                                    ...r,
+                                    comments: [
+                                      ...r.comments,
+                                      {
+                                        id: Date.now(),
+                                        text: newComment,
+                                        likes: 0,
+                                        dislikes: 0,
+                                      },
+                                    ],
+                                  }
+                                : r
+                            )
+                          );
+
+                          setNewComment("");
+                        }}
+                      >
+                        Post
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
