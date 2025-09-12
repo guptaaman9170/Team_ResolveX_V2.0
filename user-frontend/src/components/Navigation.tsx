@@ -81,7 +81,7 @@ const Navigation = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <Link to="/" className={`hover:text-primary transition-colors ${isHighContrast ? "text-blue-400" : "text-foreground"}`}>
+              <Link to="/index" className={`hover:text-primary transition-colors ${isHighContrast ? "text-blue-400" : "text-foreground"}`}>
                 {navigationData[language].home}
               </Link>
               <Link to="/report" className={`hover:text-primary transition-colors ${isHighContrast ? "text-blue-400" : "text-foreground"}`}>
@@ -169,7 +169,7 @@ const Navigation = () => {
           {isMenuOpen && (
             <div className={`md:hidden py-4 border-t ${isHighContrast ? "border-blue-400" : "border-border"}`}>
               <div className="flex flex-col space-y-3">
-                <Link to="/" className={`hover:text-primary transition-colors px-3 py-2 ${isHighContrast ? "text-blue-400" : "text-foreground"}`}>
+                <Link to="/index" className={`hover:text-primary transition-colors px-3 py-2 ${isHighContrast ? "text-blue-400" : "text-foreground"}`}>
                   {navigationData[language].home}
                 </Link>
                 <Link to="/report" className={`hover:text-primary transition-colors px-3 py-2 ${isHighContrast ? "text-blue-400" : "text-foreground"}`}>
