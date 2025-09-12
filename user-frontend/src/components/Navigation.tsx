@@ -10,6 +10,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import NotificationModal from "./NotificationModal";
 import navigationData from "@/translations/navigation.json";
+import logoImg from "@/assets/logo.png";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -87,11 +88,14 @@ const Navigation = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-civic flex items-center justify-center">
-                <span className="text-white font-bold text-sm">CR</span>
-              </div>
-              <span className="text-xl font-bold text-gradient">CivicReport</span>
-            </div>
+ <img 
+  src={logoImg} 
+  alt="CivicReport Logo" 
+  className="w-28 mt-2 h-auto object-contain"
+/>
+
+</div>
+
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
