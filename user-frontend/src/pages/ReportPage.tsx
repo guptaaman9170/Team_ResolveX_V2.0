@@ -11,6 +11,8 @@ import Navigation from "@/components/Navigation";
 import { useToast } from "@/hooks/use-toast";
 import { reportBus } from "@/components/FloatingReportModal"; // import the bus
 
+const API_BASE = import.meta.env.VITE_API_BASE;
+
 const ReportPage = () => {
   const [reportData, setReportData] = useState({
     title: "",
@@ -95,7 +97,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     );
 
     // Send report to backend for spam/AI check
-    const response = await fetch("http://127.0.0.1:5001/moderate", {
+    const response = await fetch(`${API_BASE}/moderate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
