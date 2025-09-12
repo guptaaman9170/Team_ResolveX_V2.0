@@ -1,0 +1,146 @@
+{
+  "en": {
+    "skipLink": "Skip to main content",
+    "footer": {
+      "about": {
+        "title": "CivicReport",
+        "description": "Empowering communities through smart civic reporting and AI-driven solutions."
+      },
+      "platform": {
+        "title": "Platform",
+        "links": {
+          "reportIssue": "Report Issue",
+          "dashboard": "Dashboard",
+          "trackReports": "Track Reports",
+          "community": "Community"
+        }
+      },
+      "support": {
+        "title": "Support",
+        "links": {
+          "helpCenter": "Help Center",
+          "videoTutorials": "Video Tutorials",
+          "accessibility": "Accessibility",
+          "contactUs": "Contact Us"
+        }
+      },
+      "legal": {
+        "title": "Legal",
+        "links": {
+          "privacy": "Privacy Policy",
+          "terms": "Terms of Service",
+          "cookies": "Cookie Policy"
+        }
+      },
+      "copyright": "© 2024 CivicReport. All rights reserved. Built with AI for the community."
+    }
+  },
+  "hi": {
+    "skipLink": "मुख्य सामग्री पर जाएं",
+    "footer": {
+      "about": {
+        "title": "सिविकरिपोर्ट",
+        "description": "स्मार्ट सिविक रिपोर्टिंग और एआई-आधारित समाधानों के माध्यम से समुदायों को सशक्त बनाना।"
+      },
+      "platform": {
+        "title": "प्लेटफ़ॉर्म",
+        "links": {
+          "reportIssue": "समस्या रिपोर्ट करें",
+          "dashboard": "डैशबोर्ड",
+          "trackReports": "रिपोर्ट ट्रैक करें",
+          "community": "समुदाय"
+        }
+      },
+      "support": {
+        "title": "सहायता",
+        "links": {
+          "helpCenter": "सहायता केंद्र",
+          "videoTutorials": "वीडियो ट्यूटोरियल",
+          "accessibility": "सुगम्यता",
+          "contactUs": "संपर्क करें"
+        }
+      },
+      "legal": {
+        "title": "कानूनी",
+        "links": {
+          "privacy": "गोपनीयता नीति",
+          "terms": "सेवा की शर्तें",
+          "cookies": "कुकी नीति"
+        }
+      },
+      "copyright": "© 2024 CivicReport. सभी अधिकार सुरक्षित। समुदाय के लिए एआई के साथ बनाया गया।"
+    }
+  },
+  "mr": {
+    "skipLink": "मुख्य सामग्रीकडे जा",
+    "footer": {
+      "about": {
+        "title": "सिविकरिपोर्ट",
+        "description": "स्मार्ट सिव्हिक रिपोर्टिंग आणि एआय-आधारित उपायांद्वारे समुदायांना सशक्त बनवणे."
+      },
+      "platform": {
+        "title": "प्लॅटफॉर्म",
+        "links": {
+          "reportIssue": "समस्या नोंदवा",
+          "dashboard": "डॅशबोर्ड",
+          "trackReports": "अहवाल ट्रॅक करा",
+          "community": "समुदाय"
+        }
+      },
+      "support": {
+        "title": "सहाय्यता",
+        "links": {
+          "helpCenter": "सहायता केंद्र",
+          "videoTutorials": "व्हिडिओ ट्यूटोरियल",
+          "accessibility": "सुलभता",
+          "contactUs": "संपर्क करा"
+        }
+      },
+      "legal": {
+        "title": "कायदेशीर",
+        "links": {
+          "privacy": "गोपनीयता धोरण",
+          "terms": "सेवा अटी",
+          "cookies": "कुकी धोरण"
+        }
+      },
+      "copyright": "© 2024 CivicReport. सर्व हक्क राखीव. समुदायासाठी AI सह तयार केले."
+    }
+  },
+  "gu": {
+    "skipLink": "મુખ્ય સામગ્રી પર જાઓ",
+    "footer": {
+      "about": {
+        "title": "સિવિકરિપોર્ટ",
+        "description": "સ્માર્ટ સિવિક રિપોર્ટિંગ અને એઆઈ આધારિત સોલ્યુશન્સ દ્વારા સમુદાયને સશક્ત બનાવવું."
+      },
+      "platform": {
+        "title": "પ્લેટફોર્મ",
+        "links": {
+          "reportIssue": "સમસ્યા રિપોર્ટ કરો",
+          "dashboard": "ડેશબોર્ડ",
+          "trackReports": "રિપોર્ટ ટ્રૅક કરો",
+          "community": "સમુદાય"
+        }
+      },
+      "support": {
+        "title": "સહાયતા",
+        "links": {
+          "helpCenter": "સહાય કેન્દ્ર",
+          "videoTutorials": "વીડિઓ ટ્યુટોરિયલ્સ",
+          "accessibility": "સુગમતા",
+          "contactUs": "અમારો સંપર્ક કરો"
+        }
+      },
+      "legal": {
+        "title": "કાનૂની",
+        "links": {
+          "privacy": "પ્રાઇવસી પોલિસી",
+          "terms": "સેવા શરતો",
+          "cookies": "કૂકીઝ પોલિસી"
+        }
+      },
+      "copyright": "© 2024 CivicReport. બધા અધિકારો રિઝર્વ. સમુદાય માટે AI સાથે બનાવ્યું."
+    }
+  }
+}
