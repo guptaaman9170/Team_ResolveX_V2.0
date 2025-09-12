@@ -84,14 +84,17 @@ const FloatingEmergencyModal = () => {
   return (
     <>
       {/* Floating Emergency Button */}
-      <Button
-        size="lg"
-        className="fixed bottom-24 right-8 w-16 h-16 rounded-full bg-red-600 shadow-lg z-50"
-        aria-label="Send Emergency Alert"
-        onClick={openModal}
-      >
-        <AlertTriangle className="w-6 h-6 text-white" />
-      </Button>
+      <button
+  className="fixed bottom-10 right-8 w-16 h-16 rounded-full shadow-lg border-2 border-white flex items-center justify-center z-[1000]"
+  aria-label="Send Emergency Alert"
+  onClick={openModal}
+  style={{ backgroundColor: "#EF4444" }}
+>
+  <AlertTriangle className="w-6 h-6 text-white" />
+</button>
+
+
+
 
       {/* Modal */}
       {isOpen && (
@@ -165,12 +168,14 @@ const FloatingEmergencyModal = () => {
             </div>
 
             <Button
-              className="mt-4 bg-red-600 text-white font-semibold"
-              disabled={sending}
-              onClick={sendEmergencyAlert}
-            >
-              {sending ? "Sending..." : "Send SOS Alert"}
-            </Button>
+  style={{ backgroundColor: sending ? "#F87171" : "#DC2626", color: "white" }}
+  disabled={sending}
+  onClick={sendEmergencyAlert}
+  className="mt-4 font-semibold"
+>
+  {sending ? "Sending..." : "Send SOS Alert"}
+</Button>
+
           </div>
         </div>
       )}

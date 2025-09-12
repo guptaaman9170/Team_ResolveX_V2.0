@@ -200,7 +200,7 @@ const FloatingReportModal = () => {
     <>
       <Button
         size="lg"
-        className="fixed bottom-8 right-8 w-16 h-16 rounded-full btn-civic shadow-float z-40"
+        className="fixed bottom-8 right-8 w-16 h-16 rounded-full btn-civic shadow-float z-40 border-2"
         aria-label="Quick Civic Report"
         onClick={openModal}
       >

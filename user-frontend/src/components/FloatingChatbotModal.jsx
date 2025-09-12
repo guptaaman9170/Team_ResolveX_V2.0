@@ -109,10 +109,10 @@ const FloatingChatbotModal = () => {
       <Button
   size="lg"
   style={{ bottom: "30px", left: "32px" }}
-  className="fixed w-16 h-16 rounded-full 
+  className="fixed w-16 h-16 rounded-full
              bg-gradient-to-r from-indigo-600 to-purple-600 
              hover:from-indigo-700 hover:to-purple-700 
-             shadow-lg flex items-center justify-center z-50"
+             shadow-lg flex items-center justify-center z-50 border-2 "
   onClick={() => setOpen(true)}
   aria-label="Open Chatbot"
 >
