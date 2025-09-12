@@ -21,10 +21,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* Landing page */}
-          <Route path="/" element={<AuthPage />} />
+          <Route path="/auth" element={<AuthPage />} />
 
           {/* Main app pages */}
-          <Route path="/index" element={<Index />} />
+          <Route path="/" element={<Index />} />
           <Route path="/report" element={<ReportPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/track-reports" element={<TrackReportsPage />} />

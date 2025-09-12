@@ -11,7 +11,7 @@ const AuthPage = () => {
     localStorage.setItem("google_token", credentialResponse.credential);
 
     // After login, redirect to Index
-    navigate("/index");
+    navigate("/");
   };
 
   const handleError = () => {

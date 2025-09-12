@@ -30,12 +30,32 @@ def chat():
             return jsonify({"reply": "⚠️ Please enter a valid query."})
 
         response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",  # can switch to gpt-3.5-turbo if needed
-            messages=[
-                {"role": "system", "content": "You are a helpful Civic AI Assistant. Help users with civic issues, reporting guidance, and community support."},
-                {"role": "user", "content": user_msg}
-            ]
-        )
+    model="gpt-4o-mini",
+    messages=[
+        {
+            "role": "system",
+            "content": (
+                "You are Civic AI Assistant for a civic issue reporting portal. "
+                "Your role is to guide users on civic issues. \n\n"
+                "Your role is to guide users on how to report civic issues . \n\n"
+                "If user is not asking about something other , you can also assist with that like in our portal they can track their report , they can also upvote or downvote a existing report done by any another . \n\n"
+                "Their is also multilingual feature in our website , user can change the language of website . \n\n"
+                "Instructions:\n"
+                "If user is not asking on how to report then do no tell about how to report."
+                "While telling on how to report do not tell how we will analze it."
+                "1. By default, explain ONLY the photo upload method: The user can click/upload a photo, "
+                "the AI analyzes it, auto-fills the issue details, asks for location permission, and submits the report.\n"
+                "2. If (and only if) the user asks for another method (e.g., 'koi aur method?', 'any other way?', 'how else?'), "
+                "then describe the second method: Going to the report page, filling details manually (issue type, description, location), and submitting.\n"
+                "3. Keep answers short, clear, and step-by-step.\n"
+                "4. Do not give unnecessary information or extra details outside the reporting process.\n"
+                "5. Keep the tone supportive and simple."
+            ),
+        },
+        {"role": "user", "content": user_msg},
+    ],
+)
+
 
         reply = response.choices[0].message["content"]
         return jsonify({"reply": reply})
