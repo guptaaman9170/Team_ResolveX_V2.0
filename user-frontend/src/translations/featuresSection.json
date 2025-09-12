@@ -1,0 +1,139 @@
+{
+  "en": {
+    "headerTitle": "Comprehensive Smart Features",
+    "headerDescription": "Our platform combines cutting-edge technology with user-centered design to create the most advanced civic reporting system available.",
+    
+    "features": [
+      {
+        "title": "AI-Powered Analysis",
+        "description": "Advanced machine learning automatically categorizes and prioritizes reports based on severity and type."
+      },
+      {
+        "title": "Community Verification",
+        "description": "Citizens can verify reports through upvotes and comments, ensuring accuracy and relevance."
+      },
+      {
+        "title": "AR Reporting",
+        "description": "Use augmented reality to highlight and tag problem areas directly through your device camera."
+      },
+      {
+        "title": "Geo-Tagged Reports",
+        "description": "Automatic location tagging with 3D image capture for comprehensive issue documentation."
+      },
+      {
+        "title": "Multilingual Support",
+        "description": "Report and receive updates in your native language with voice-to-text in multiple languages."
+      },
+      {
+        "title": "Accessibility First",
+        "description": "High contrast modes, large fonts, text-to-speech, and screen reader compatibility."
+      }
+    ],
+
+    "dashboardTitle": "Real-Time Dashboard & Analytics",
+    "dashboardDescription": "Monitor civic issues across your community with our comprehensive dashboard. Track report status, view analytics, and coordinate municipal responses all in one place.",
+
+    "dashboardFeatures": [
+      "Live status tracking for all reports",
+      "AI-powered priority recommendations",
+      "Emergency alert system"
+    ],
+
+    "stats": [
+      { "number": "10K+", "label": "Reports Resolved" },
+      { "number": "5K+", "label": "Active Citizens" },
+      { "number": "24/7", "label": "Response Time" },
+      { "number": "12", "label": "Languages" }
+    ]
+  },
+
+  "hi": {
+    "headerTitle": "सम्पूर्ण स्मार्ट फीचर्स",
+    "headerDescription": "हमारा प्लेटफ़ॉर्म अत्याधुनिक तकनीक और उपयोगकर्ता-केंद्रित डिज़ाइन को जोड़कर सबसे उन्नत नागरिक रिपोर्टिंग सिस्टम प्रदान करता है।",
+
+    "features": [
+      { "title": "एआई संचालित विश्लेषण", "description": "उन्नत मशीन लर्निंग रिपोर्ट को severity और type के आधार पर स्वचालित रूप से श्रेणीबद्ध और प्राथमिकता देता है।" },
+      { "title": "समुदाय सत्यापन", "description": "नागरिक रिपोर्ट को वोट्स और टिप्पणियों के माध्यम से सत्यापित कर सकते हैं।" },
+      { "title": "एआर रिपोर्टिंग", "description": "अपने डिवाइस कैमरे के माध्यम से समस्या क्षेत्रों को हाइलाइट और टैग करें।" },
+      { "title": "भौगोलिक टैग की गई रिपोर्टें", "description": "स्वचालित स्थान टैगिंग और 3डी इमेज कैप्चर।" },
+      { "title": "बहुभाषी समर्थन", "description": "अपनी मातृभाषा में वॉइस-टू-टेक्स्ट के साथ रिपोर्ट करें और अपडेट प्राप्त करें।" },
+      { "title": "पहली प्राथमिकता: पहुँच", "description": "उच्च कंट्रास्ट मोड, बड़े फॉन्ट, टेक्स्ट-टू-स्पीच, स्क्रीन रीडर समर्थन।" }
+    ],
+
+    "dashboardTitle": "रियल-टाइम डैशबोर्ड और विश्लेषण",
+    "dashboardDescription": "सम्पूर्ण डैशबोर्ड के माध्यम से अपने समुदाय के नागरिक मुद्दों पर नज़र रखें। रिपोर्ट स्थिति, विश्लेषण देखें, और नगर पालिका प्रतिक्रियाएं समन्वयित करें।",
+
+    "dashboardFeatures": [
+      "सभी रिपोर्ट के लिए लाइव स्टेटस ट्रैकिंग",
+      "एआई संचालित प्राथमिकता सिफारिशें",
+      "आपातकालीन अलर्ट सिस्टम"
+    ],
+
+    "stats": [
+      { "number": "10K+", "label": "समाधान की गई रिपोर्टें" },
+      { "number": "5K+", "label": "सक्रिय नागरिक" },
+      { "number": "24/7", "label": "प्रतिक्रिया समय" },
+      { "number": "12", "label": "भाषाएँ" }
+    ]
+  },
+
+  "mr": {
+    "headerTitle": "सम्पूर्ण स्मार्ट वैशिष्ट्ये",
+    "headerDescription": "आमचा प्लॅटफॉर्म अत्याधुनिक तंत्रज्ञान आणि वापरकर्ता-केंद्रित डिझाइन एकत्र करून सर्वात प्रगत नागरिक रिपोर्टिंग सिस्टम प्रदान करतो.",
+
+    "features": [
+      { "title": "एआय-संचालित विश्लेषण", "description": "प्रगत मशीन लर्निंग अहवाल severity आणि type नुसार आपोआप वर्गीकृत व प्राथमिकता देते." },
+      { "title": "समुदाय सत्यापन", "description": "नागरिक रिपोर्ट वोट्स आणि टिप्पण्या द्वारे सत्यापित करू शकतात." },
+      { "title": "एआर रिपोर्टिंग", "description": "आपल्या डिव्हाइस कॅमेराद्वारे समस्या क्षेत्र हायलाइट व टॅग करा." },
+      { "title": "भौगोलिक टॅग केलेल्या रिपोर्ट्स", "description": "आपोआप स्थान टॅगिंग व 3D इमेज कॅप्चर." },
+      { "title": "बहुभाषिक समर्थन", "description": "वॉइस-टू-टेक्स्ट वापरून आपल्या मातृभाषेत अपडेट्स व रिपोर्टिंग." },
+      { "title": "पहिले प्रवेशयोग्यता", "description": "उच्च कंट्रास्ट मोड, मोठे फॉन्ट, टेक्स्ट-टू-स्पीच व स्क्रीन रीडर सुसंगतता." }
+    ],
+
+    "dashboardTitle": "रीयल-टाइम डॅशबोर्ड व विश्लेषण",
+    "dashboardDescription": "आपल्या समुदायातील नागरिक समस्यांचे संपूर्ण डॅशबोर्डद्वारे निरीक्षण करा. अहवाल स्थिती, विश्लेषणे पाहा आणि नगरपालिका प्रतिसाद समन्वयित करा.",
+
+    "dashboardFeatures": [
+      "सर्व अहवालांसाठी लाइव्ह स्थिती ट्रॅकिंग",
+      "एआय-संचालित प्राथमिकता शिफारसी",
+      "आपत्कालीन अलर्ट प्रणाली"
+    ],
+
+    "stats": [
+      { "number": "10K+", "label": "संपादित अहवाल" },
+      { "number": "5K+", "label": "सक्रिय नागरिक" },
+      { "number": "24/7", "label": "प्रतिक्रिया वेळ" },
+      { "number": "12", "label": "भाषा" }
+    ]
+  },
+
+  "gu": {
+    "headerTitle": "સંપૂર્ણ સ્માર્ટ ફીચર્સ",
+    "headerDescription": "અમારું પ્લેટફોર્મ અદ્યતન ટેકનોલોજી અને વપરાશકર્તા કેન્દ્રિત ડિઝાઇન સાથે સંયોજિત કરીને સૌથી અગ્રણી નાગરિક રિપોર્ટિંગ સિસ્ટમ બનાવે છે.",
+
+    "features": [
+      { "title": "એઆઈ આધારિત વિશ્લેષણ", "description": "ઉન્નત મશીન લર્નિંગ રિપોર્ટ severity અને type આધારિત શ્રેણીબદ્ધ અને પ્રાથમિકતા આપે છે." },
+      { "title": "સમુદાયની ચકાસણી", "description": "નાગરિકો રિપોર્ટ્સને વોટ્સ અને ટિપ્પણીઓ દ્વારા ચકાસી શકે છે." },
+      { "title": "એઆર રિપોર્ટિંગ", "description": "તમારા ડિવાઇસ કેમેરા દ્વારા સમસ્યા વિસ્તારને હાઇલાઇટ અને ટેગ કરો." },
+      { "title": "જિયો-ટૅગ કરેલી રિપોર્ટ્સ", "description": "સ્વચાલિત સ્થાન ટૅગિંગ અને 3D છબી કૅપ્ચર." },
+      { "title": "બહુભાષી સપોર્ટ", "description": "તમારી માતૃભાષામાં વૉઇસ-ટૂ-ટેક્સ્ટ સાથે રિપોર્ટ કરો અને અપડેટ્સ મેળવો." },
+      { "title": "એક્સેસિબિલિટી પ્રથમ", "description": "ઉચ્ચ કોન્ટ્રાસ્ટ મોડ્સ, મોટા ફોન્ટ, ટેક્સ્ટ-ટૂ-સ્પીચ, સ્ક્રીન રીડર સુસંગતતા." }
+    ],
+
+    "dashboardTitle": "રિયલ-ટાઈમ ડેશબોર્ડ અને એનાલિટિક્સ",
+    "dashboardDescription": "તમારા સમુદાયમાં નાગરિક મુદ્દાઓનું વ્યાપક ડેશબોર્ડથી મોનિટરિંગ કરો. રિપોર્ટ સ્થિતિ ટ્રેક કરો, એનાલિટિક્સ જુઓ અને મ્યુનિસિપલ જવાબોનું સંયોજન કરો.",
+
+    "dashboardFeatures": [
+      "બધા રિપોર્ટ્સ માટે લાઈવ સ્થિતિ ટ્રેકિંગ",
+      "એઆઈ આધારિત પ્રાથમિકતા ભલામણો",
+      "એમર્જન્સી એલર્ટ સિસ્ટમ"
+    ],
+
+    "stats": [
+      { "number": "10K+", "label": "અનલocked રિપોર્ટ્સ" },
+      { "number": "5K+", "label": "સક્રિય નાગરિકો" },
+      { "number": "24/7", "label": "પ્રતિસાદ સમય" },
+      { "number": "12", "label": "ભાષાઓ" }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "en": {
+    "titleLine1": "Smart Civic",
+    "titleLine2": "Reporting",
+    "titleLine3": "System",
+    "description": "Empowering citizens and municipalities with AI-powered issue detection, multilingual support, and accessible reporting for a smarter, more responsive community.",
+    "reportIssueButton": "Report an Issue",
+    "viewDashboardButton": "View Dashboard",
+    "feature1Title": "Photo Recognition",
+    "feature1Desc": "AI detects potholes automatically",
+    "feature2Title": "Multilingual Support",
+    "feature2Desc": "Report in your native language",
+    "feature3Title": "Community Verification",
+    "feature3Desc": "Citizens validate reports together"
+  },
+  "hi": {
+    "titleLine1": "स्मार्ट सिविक",
+    "titleLine2": "रिपोर्टिंग",
+    "titleLine3": "सिस्टम",
+    "description": "नागरिकों और नगरपालिका को एआई-पावर्ड समस्या पहचान, बहुभाषी समर्थन, और सुलभ रिपोर्टिंग के साथ सशक्त बनाना ताकि एक स्मार्ट और उत्तरदायी समुदाय बन सके।",
+    "reportIssueButton": "समस्या रिपोर्ट करें",
+    "viewDashboardButton": "डैशबोर्ड देखें",
+    "feature1Title": "फोटो पहचान",
+    "feature1Desc": "एआई स्वचालित रूप से गड्ढों का पता लगाता है",
+    "feature2Title": "बहुभाषी समर्थन",
+    "feature2Desc": "अपनी मातृभाषा में रिपोर्ट करें",
+    "feature3Title": "सामुदायिक सत्यापन",
+    "feature3Desc": "नागरिक मिलकर रिपोर्ट की पुष्टि करते हैं"
+  },
+  "mr": {
+    "titleLine1": "स्मार्ट सिव्हिक",
+    "titleLine2": "रिपोर्टिंग",
+    "titleLine3": "सिस्टम",
+    "description": "नागरिक आणि नगरपालिका यांना एआय-आधारित समस्या शोध, बहुभाषिक समर्थन आणि सुलभ रिपोर्टिंगसह समर्थ बनवून एक स्मार्ट व प्रतिसादात्मक समुदाय तयार करण्यासाठी.",
+    "reportIssueButton": "समस्या नोंदवा",
+    "viewDashboardButton": "डॅशबोर्ड पाहा",
+    "feature1Title": "फोटो ओळख",
+    "feature1Desc": "एआय आपोआप गडगडाट ओळखतो",
+    "feature2Title": "बहुभाषिक समर्थन",
+    "feature2Desc": "आपल्या स्थानिक भाषेत रिपोर्ट करा",
+    "feature3Title": "समुदायाची पडताळणी",
+    "feature3Desc": "नागरिक मिळून रिपोर्ट्सचे प्रमाणीकरण करतात"
+  },
+  "gu": {
+    "titleLine1": "સ્માર્ટ સિવિક",
+    "titleLine2": "રિપોર્ટિંગ",
+    "titleLine3": "સિસ્ટમ",
+    "description": "નાગરિકો અને નગરપાલિકાઓને એઆઇ આધારિત સમસ્યા શોધ, બહુભાષી સપોર્ટ અને સુગમ રિપોર્ટિંગ સાથે સક્ષમ બનાવવું જેથી સ્માર્ટ અને ઝડપી પ્રતિસાદવાળી સમુદાય રચાય.",
+    "reportIssueButton": "સમસ્યા રિપોર્ટ કરો",
+    "viewDashboardButton": "ડેશબોર્ડ જુઓ",
+    "feature1Title": "ફોટો ઓળખ",
+    "feature1Desc": "એઆઇ આપમેળે ગોડા શોધે છે",
+    "feature2Title": "બહુભાષી સપોર્ટ",
+    "feature2Desc": "તમારી સ્થાનિક ભાષામાં રિપોર્ટ કરો",
+    "feature3Title": "સમુદાયની ચકાસણી",
+    "feature3Desc": "નાગરિકો મળીને રિપોર્ટ્સનું માન્યકરણ કરે છે"
+  }
+}
