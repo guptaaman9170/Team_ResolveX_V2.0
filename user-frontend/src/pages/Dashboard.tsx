@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../components/ui/dropdown-menu";
+
+import Navigation from "@/components/Navigation";
 import {
   Search,
   Filter,
@@ -18,21 +21,21 @@ import {
   TrendingUp,
   Users,
   Calendar,
+  ChevronDown,
 } from "lucide-react";
-import Navigation from "@/components/Navigation";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
   const [votedReports, setVotedReports] = useState<string[]>([]);
+  const [downvotedReports, setDownvotedReports] = useState<string[]>([]);
   const [newComment, setNewComment] = useState("");
-  const [commentReactions, setCommentReactions] = useState<{ [key: number]: "like" | "dislike" | null }>({});
+  const [commentReactions, setCommentReactions] = useState<{
+    [key: number]: "like" | "dislike" | null;
+  }>({});
   const [expandedReport, setExpandedReport] = useState<string | null>(null);
 
-  // Mock Reports
   const [reports, setReports] = useState([
     {
       id: "CR-2024-001",
@@ -46,14 +49,12 @@ const Dashboard = () => {
       comments: [
         { id: 1, text: "This needs urgent fixing!", likes: 2, dislikes: 0 },
         { id: 2, text: "My car was damaged here yesterday.", likes: 1, dislikes: 1 },
-        { id: 3, text: "Dangerous for bikers at night.", likes: 0, dislikes: 0 },
-        { id: 4, text: "Please repair ASAP.", likes: 3, dislikes: 0 },
-        { id: 5, text: "It’s getting worse after rain.", likes: 0, dislikes: 2 },
       ],
       assignedTo: "Public Works Dept",
-      description: "Large pothole causing traffic issues and potential vehicle damage.",
+      description:
+        "Large pothole causing traffic issues and potential vehicle damage.",
       details:
-        "The pothole on Main Street has been expanding over the past few weeks, creating a major hazard for both cars and two-wheelers. Drivers have reported frequent tire damage and difficulty maneuvering around the area, especially during peak traffic hours. In rainy conditions, the pothole fills with water, making it hard to spot and increasing the risk of accidents. If not repaired soon, it could lead to serious vehicle damage and possible injuries.",
+        "The pothole on Main Street has been expanding over the past few weeks, creating a major hazard...",
       aiConfidence: 95,
     },
     {
@@ -68,20 +69,20 @@ const Dashboard = () => {
       comments: [
         { id: 1, text: "This needs urgent fixing!", likes: 2, dislikes: 0 },
         { id: 2, text: "My car was damaged here yesterday.", likes: 1, dislikes: 1 },
-        { id: 3, text: "Dangerous for bikers at night.", likes: 0, dislikes: 0 },
-        { id: 4, text: "Please repair ASAP.", likes: 3, dislikes: 0 },
-        { id: 5, text: "It’s getting worse after rain.", likes: 0, dislikes: 2 },
       ],
       assignedTo: "Electrical Dept",
       description: "Streetlight not working, creating safety concerns for pedestrians.",
       details:
-        "The non-functional streetlight near the residential block has left the entire stretch of road poorly lit during nighttime. This creates unsafe conditions for pedestrians, particularly women, children, and elderly residents walking in the area. Several locals have reported feeling unsafe due to reduced visibility, and vehicles also find it difficult to navigate in low light. Repairing the streetlight is critical to improving both safety and security in the neighborhood.",
+        "The non-functional streetlight near the residential block has left the entire stretch poorly lit...",
       aiConfidence: 87,
     },
-    // Add more reports as needed
   ]);
 
-  const handleCommentReaction = (reportId: string, commentId: number, action: "like" | "dislike") => {
+  const handleCommentReaction = (
+    reportId: string,
+    commentId: number,
+    action: "like" | "dislike"
+  ) => {
     setReports((prevReports) =>
       prevReports.map((r) =>
         r.id === reportId
@@ -133,6 +134,21 @@ const Dashboard = () => {
     );
 
     setVotedReports((prev) =>
+      prev.includes(id) ? prev.filter((voteId) => voteId !== id) : [...prev, id]
+    );
+  };
+
+  const handleDownvote = (id: string) => {
+    setReports((prevReports) =>
+      prevReports.map((report) => ({
+        ...report,
+        votes: downvotedReports.includes(id)
+          ? report.votes + 1
+          : report.votes - 1,
+      }))
+    );
+
+    setDownvotedReports((prev) =>
       prev.includes(id) ? prev.filter((voteId) => voteId !== id) : [...prev, id]
     );
   };
@@ -195,7 +211,7 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => (
             <Card key={index} className="card-civic">
@@ -273,7 +289,6 @@ const Dashboard = () => {
               <CardContent className="p-6">
                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                   <div className="flex-1">
-                    {/* Report Header */}
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h3 className="text-xl font-semibold text-foreground mb-2">{report.title}</h3>
@@ -306,7 +321,6 @@ const Dashboard = () => {
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">{report.description}</p>
 
-                    {/* Votes and Comments */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -333,7 +347,9 @@ const Dashboard = () => {
                                     <span>• {c.text}</span>
                                     <div className="flex items-center gap-3">
                                       <button
-                                        onClick={() => handleCommentReaction(report.id, c.id, "like")}
+                                        onClick={() =>
+                                          handleCommentReaction(report.id, c.id, "like")
+                                        }
                                         className={`flex items-center gap-1 ${
                                           commentReactions[c.id] === "like" ? "text-blue-500" : ""
                                         }`}
@@ -341,7 +357,9 @@ const Dashboard = () => {
                                         <ThumbsUp className="w-4 h-4" /> {c.likes}
                                       </button>
                                       <button
-                                        onClick={() => handleCommentReaction(report.id, c.id, "dislike")}
+                                        onClick={() =>
+                                          handleCommentReaction(report.id, c.id, "dislike")
+                                        }
                                         className={`flex items-center gap-1 ${
                                           commentReactions[c.id] === "dislike" ? "text-red-500" : ""
                                         }`}
@@ -356,7 +374,6 @@ const Dashboard = () => {
                               )}
                             </div>
 
-                            {/* Add new comment */}
                             <div className="flex gap-2">
                               <Input
                                 placeholder="Add a comment..."
@@ -374,12 +391,7 @@ const Dashboard = () => {
                                             ...r,
                                             comments: [
                                               ...r.comments,
-                                              {
-                                                id: Date.now(),
-                                                text: newComment,
-                                                likes: 0,
-                                                dislikes: 0,
-                                              },
+                                              { id: Date.now(), text: newComment, likes: 0, dislikes: 0 },
                                             ],
                                           }
                                         : r
@@ -412,18 +424,31 @@ const Dashboard = () => {
                         </Button>
 
                         <Button
-                          variant={votedReports.includes(report.id) ? "default" : "outline"}
+                          variant="outline"
                           size="sm"
                           onClick={() => handleVote(report.id)}
                         >
                           <ThumbsUp
-                            className={`w-4 h-4 ${votedReports.includes(report.id) ? "text-blue-500" : ""}`}
+                            className={`w-4 h-4 ${
+                              votedReports.includes(report.id) ? "text-blue-500" : ""
+                            }`}
+                          />
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDownvote(report.id)}
+                        >
+                          <ThumbsDown
+                            className={`w-4 h-4 ${
+                              downvotedReports.includes(report.id) ? "text-red-500" : ""
+                            }`}
                           />
                         </Button>
                       </div>
                     </div>
 
-                    {/* Expanded Report Details */}
                     {expandedReport === report.id && (
                       <div className="mt-4 border-t pt-4 bg-muted/30 rounded-lg p-4">
                         <h4 className="font-semibold mb-2">Issue Details</h4>
@@ -439,7 +464,6 @@ const Dashboard = () => {
                           <Badge>{report.status.toUpperCase()}</Badge>
                         </div>
 
-                        {/* Progress bar */}
                         <div className="mt-4">
                           <p className="text-sm font-medium mb-1">Resolution Progress</p>
                           <div className="w-full bg-muted rounded-full h-3">
@@ -457,7 +481,7 @@ const Dashboard = () => {
                                     ? "100%"
                                     : report.status === "in-progress"
                                     ? "60%"
-                                    : "20%",
+                                    : "0%",
                               }}
                             />
                           </div>
@@ -470,29 +494,6 @@ const Dashboard = () => {
             </Card>
           ))}
         </div>
-
-        {/* Load More */}
-        {filteredReports.length > 0 && (
-          <div className="text-center mt-8">
-            <Button variant="outline" size="lg" className="gap-2">
-              <TrendingUp className="w-4 h-4" />
-              Load More Reports
-            </Button>
-          </div>
-        )}
-
-        {/* No Results */}
-        {filteredReports.length === 0 && (
-          <Card className="card-civic">
-            <CardContent className="p-12 text-center">
-              <AlertTriangle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">No reports found</h3>
-              <p className="text-muted-foreground">
-                Try adjusting your search criteria or filters to find more reports.
-              </p>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );
